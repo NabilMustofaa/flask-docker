@@ -1,0 +1,1325 @@
+{
+	"info": {
+		"_postman_id": "fbf7011a-d283-4342-975b-256a7df5386d",
+		"name": "API-Soccer",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "19369185"
+	},
+	"item": [
+		{
+			"name": "Register User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"pm.test(\"Response status code is 201\", function () {\r",
+							"    pm.expect(pm.response.code).to.equal(201);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response has the required fields - message, status, and token\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData).to.have.property('message');\r",
+							"    pm.expect(responseData).to.have.property('status');\r",
+							"    pm.expect(responseData).to.have.property('token');\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Token is a non-empty string\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData.token).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Token should not be empty\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Content-Type header is application/json\", function () {\r",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Message and status are non-empty strings\", function () {\r",
+							"  const responseData = pm.response.json();\r",
+							"  \r",
+							"  pm.expect(responseData).to.be.an('object');\r",
+							"  pm.expect(responseData.message).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Message should not be empty\");\r",
+							"  pm.expect(responseData.status).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Status should not be empty\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"// Stores the token in an environment or global variable\r",
+							"var responseBody = pm.response.json();\r",
+							"var token = responseBody.token;\r",
+							"\r",
+							"pm.globals.set(\"token\", token);\r",
+							"// Extracts the username and password from the request body and stores them in environment variables\r",
+							"var requestBody = JSON.parse(pm.request.body.raw);\r",
+							"var username = requestBody.username;\r",
+							"var password = requestBody.password;\r",
+							"\r",
+							"pm.environment.set(\"username\", username);\r",
+							"pm.environment.set(\"password\", password);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\" : \"{{$randomUserName}}\",\r\n    \"password\" : \"{{$randomPassword}}\",\r\n    \"name\" : \"{{$randomUserName}}\",\r\n    \"role\" : \"1\",\r\n    \"email\" : \"{{$randomEmail}}\",\r\n    \"phone\" : \"{{$randomPhoneNumber}}\",\r\n    \"birthdate\" : \"{{birth_date}}\",\r\n    \"thumbnail\" : \"{{$randomAbstractImage}}\"\r\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{url}}/register"
+			},
+			"response": []
+		},
+		{
+			"name": "Authenticate User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"  pm.expect(pm.response.code).to.equal(200);",
+							"});",
+							"",
+							"pm.test(\"Response has the required fields - data, message, and status\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object').that.has.all.keys('data', 'message', 'status');",
+							"});",
+							"",
+							"pm.test(\"Token is a non-empty string\", function () {",
+							"  const responseData = pm.response.json();",
+							"  pm.expect(responseData.data.token).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Token should not be empty\");",
+							"});",
+							"",
+							"pm.test(\"Content-Type is application/json\", function () {",
+							"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"",
+							"// Stores the token in an environment or global variable",
+							"var responseBody = pm.response.json();",
+							"var token = responseBody.data.token;",
+							"pm.environment.set(\"token\", token);",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\" : \"{{username}}\",\r\n    \"password\" : \"{{password}}\"\r\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{url}}/authenticate"
+			},
+			"response": []
+		},
+		{
+			"name": "Update User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"    pm.expect(pm.response.code).to.equal(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Email is in a valid format\", function () {\r",
+							"  const responseData = pm.response.json();\r",
+							"  \r",
+							"  pm.expect(responseData.data.email).to.be.a('string').and.to.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/, \"Email should be in a valid format\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Username is a non-empty string\", function () {\r",
+							"  const responseData = pm.response.json();\r",
+							"  \r",
+							"  pm.expect(responseData).to.be.an('object');\r",
+							"  pm.expect(responseData.data.username).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Username should not be empty\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Password is a non-empty string\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData.data.password).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Password should not be empty\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\":\"3\",\r\n    \"username\" : \"{{$randomUserName}}\",\r\n    \"password\" : \"{{$randomPassword}}\",\r\n    \"name\" : \"{{$randomUserName}}\",\r\n    \"role\" : \"1\",\r\n    \"email\" : \"{{$randomEmail}}\",\r\n    \"phone\" : \"{{$randomPhoneNumber}}\",\r\n    \"birth_date\" : \"{{birth_date}}\",\r\n    \"thumbnail\" : \"{{$randomAbstractImage}}\"\r\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{url}}/user"
+			},
+			"response": []
+		},
+		{
+			"name": "Predict Atrribute",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response has the required fields\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData).to.have.property('alike');",
+							"    pm.expect(responseData).to.have.property('message');",
+							"    pm.expect(responseData).to.have.property('positions');",
+							"    pm.expect(responseData).to.have.property('status');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Alike is a non-empty string\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData).to.be.an('object');",
+							"  pm.expect(responseData.alike).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Alike should not be empty\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Message should not an empty string\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.message).to.not.equal(\"\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Status should not an empty string\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData.status).to.not.equal(\"\");",
+							"});",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"attributes\": {\r\n        \"attacking_crossing\": 0,\r\n        \"attacking_finishing\": 0,\r\n        \"attacking_heading_accuracy\": 72,\r\n        \"attacking_short_passing\": 0,\r\n        \"attacking_volleys\": 0,\r\n        \"defending_marking_awareness\": 70,\r\n        \"defending_sliding_tackle\": 0,\r\n        \"defending_standing_tackle\": 53,\r\n        \"mentality_aggression\": 68,\r\n        \"mentality_composure\": 0.0,\r\n        \"mentality_interceptions\": 66,\r\n        \"mentality_penalties\": 0,\r\n        \"mentality_positioning\": 38,\r\n        \"mentality_vision\": 0,\r\n        \"movement_acceleration\": 72,\r\n        \"movement_agility\": 0,\r\n        \"movement_balance\": 0,\r\n        \"movement_reactions\": 0,\r\n        \"movement_sprint_speed\": 39,\r\n        \"power_jumping\": 0,\r\n        \"power_long_shots\": 0,\r\n        \"power_shot_power\": 0,\r\n        \"power_stamina\": 0,\r\n        \"power_strength\": 57,\r\n        \"skill_ball_control\": 0,\r\n        \"skill_curve\": 0,\r\n        \"skill_dribbling\": 0,\r\n        \"skill_fk_accuracy\": 0,\r\n        \"skill_long_passing\": 0\r\n    }\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{url}}/attribute"
+			},
+			"response": []
+		},
+		{
+			"name": "Save Predicted Attribute",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response has the required fields\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData).to.be.an('object');",
+							"  pm.expect(responseData).to.have.property('alike');",
+							"  pm.expect(responseData).to.have.property('message');",
+							"  pm.expect(responseData).to.have.property('positions');",
+							"  pm.expect(responseData).to.have.property('status');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Alike is an array\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.alike).to.be.an('array');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Positions is an array\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData.positions).to.be.an('array');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Message should not an empty string\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.message).to.not.equal(\"\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Status should not an empty string\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData.status).to.not.equal(\"\");",
+							"});",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"attributes\": {\r\n        \"attacking_crossing\": 0,\r\n        \"attacking_finishing\": 0,\r\n        \"attacking_heading_accuracy\": 72,\r\n        \"attacking_short_passing\": 0,\r\n        \"attacking_volleys\": 0,\r\n        \"defending_marking_awareness\": 70,\r\n        \"defending_sliding_tackle\": 0,\r\n        \"defending_standing_tackle\": 53,\r\n        \"mentality_aggression\": 68,\r\n        \"mentality_composure\": 0.0,\r\n        \"mentality_interceptions\": 66,\r\n        \"mentality_penalties\": 0,\r\n        \"mentality_positioning\": 38,\r\n        \"mentality_vision\": 0,\r\n        \"movement_acceleration\": 72,\r\n        \"movement_agility\": 0,\r\n        \"movement_balance\": 0,\r\n        \"movement_reactions\": 0,\r\n        \"movement_sprint_speed\": 39,\r\n        \"power_jumping\": 0,\r\n        \"power_long_shots\": 0,\r\n        \"power_shot_power\": 0,\r\n        \"power_stamina\": 0,\r\n        \"power_strength\": 57,\r\n        \"skill_ball_control\": 0,\r\n        \"skill_curve\": 0,\r\n        \"skill_dribbling\": 0,\r\n        \"skill_fk_accuracy\": 0,\r\n        \"skill_long_passing\": 0,\r\n        \"height\":156,\r\n        \"weight\":126,\r\n        \"prefered_foot\":\"right\"\r\n    }\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{url}}/attribute"
+			},
+			"response": []
+		},
+		{
+			"name": "Articles",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"pm.test(\"Response status code is 200\", function () {",
+							"  pm.expect(pm.response.code).to.equal(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response has the required fields\", function () {",
+							"    const responseData = pm.response.json().data;",
+							"",
+							"    pm.expect(responseData[0]).to.be.an('object');",
+							"    pm.expect(responseData[0]).to.include.all.keys('body', 'create_date', 'deleted', 'id', 'steps', 'thumbnail', 'title', 'user_id', 'user_name');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Content-Type header is application/json\", function () {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Data array is present and contains at least one element\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.data).to.exist.and.to.be.an('array').that.is.not.empty;",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{url}}/articles"
+			},
+			"response": []
+		},
+		{
+			"name": "Create Articles",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"  pm.expect(pm.response.code).to.equal(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response has the required fields - message and status\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData.message).to.exist;\r",
+							"    pm.expect(responseData.status).to.exist;\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Content-Type is application/json\", function () {\r",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Message is a non-empty string\", function () {\r",
+							"  const responseData = pm.response.json();\r",
+							"  \r",
+							"  pm.expect(responseData).to.be.an('object');\r",
+							"  pm.expect(responseData.message).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Message should not be empty\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Status is a non-empty string\", function () {\r",
+							"  const responseData = pm.response.json();\r",
+							"  \r",
+							"  pm.expect(responseData).to.be.an('object');\r",
+							"  pm.expect(responseData.status).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Status should not be empty\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"// Stores the articleId in an environment or global variable\r",
+							"var articleId = pm.response.json().data.id;\r",
+							"pm.environment.set(\"articleId\", articleId);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"body\": \"{{body}}\",\r\n    \"steps\": \"{{steps}}\",\r\n    \"thumbnail\": null,\r\n    \"title\": \"{{title}}\",\r\n    \"position_1\" : \"{{position_1}}\",\r\n    \"position_2\" : \"{{position_2}}\",\r\n    \"position_3\" : \"{{position_3}}\",\r\n    \"min_age\" :\"{{min_age}}\",\r\n    \"max_age\" : \"{{max_age}}\"\r\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/articles",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"articles"
+					],
+					"query": [
+						{
+							"key": "body",
+							"value": "{{body}}",
+							"disabled": true
+						},
+						{
+							"key": "title",
+							"value": "{{title}}",
+							"disabled": true
+						},
+						{
+							"key": "steps",
+							"value": "{{steps}}",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Articles",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"pm.test(\"Response has the required fields - message and status\", function () {\r",
+							"  const responseData = pm.response.json();\r",
+							"  \r",
+							"  pm.expect(responseData).to.be.an('object');\r",
+							"  pm.expect(responseData.message).to.exist;\r",
+							"  pm.expect(responseData.status).to.exist;\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Message is a non-empty string\", function () {\r",
+							"  const responseData = pm.response.json();\r",
+							"  \r",
+							"  pm.expect(responseData).to.be.an('object');\r",
+							"  pm.expect(responseData.message).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Message should not be empty\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Status is a non-empty string\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData.status).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Status should not be empty\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Content-Type header is application/json\", function () {\r",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response time is less than 200ms\", function () {\r",
+							"  pm.expect(pm.response.responseTime).to.be.below(200);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"body\": \"Update test\",\r\n    \"steps\": \"{{steps}}\",\r\n    \"thumbnail\": null,\r\n    \"title\": \"{{title}}\",\r\n    \"position_1\" : \"{{position_1}}\",\r\n    \"position_2\" : \"{{position_2}}\",\r\n    \"position_3\" : \"{{position_3}}\",\r\n    \"min_age\" :\"{{min_age}}\",\r\n    \"max_age\" : \"{{max_age}}\"\r\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{url}}/articles/1"
+			},
+			"response": []
+		},
+		{
+			"name": "Detail Articles",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"  pm.expect(pm.response.code).to.equal(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Content type is application/json\", function () {\r",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validate the data object\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData.data).to.exist.and.to.be.an('object');\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Thumbnail is either null or a valid URL\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.have.property('data');\r",
+							"    pm.expect(responseData.data.thumbnail).to.satisfy(function (thumbnail) {\r",
+							"        return thumbnail === null || typeof thumbnail === 'string';\r",
+							"    }, 'Thumbnail should be either null or a string (URL)');\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{url}}/articles/{{articleId}}"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Articles",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"    pm.expect(pm.response.code).to.equal(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response has the required Content-Type header with value application/json\", function () {\r",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Message in the response is not empty\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData.message).to.exist.and.to.not.be.empty;\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Verify that the article with ID 1 is deleted from the database\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    pm.expect(responseData.message).to.exist;\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Ensure the response body does not contain any sensitive information about the deleted article\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData.message).to.exist.and.to.be.a('string');\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": "{{url}}/articles/{{articleId}}"
+			},
+			"response": []
+		},
+		{
+			"name": "Master Attribute",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"    pm.expect(pm.response.code).to.equal(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response content type is application/json\", function () {\r",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Data array is present in the response\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData.data).to.exist.and.to.be.an('array');\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Each object in the data array has the required fields\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData.data).to.be.an('array').that.is.not.empty;\r",
+							"    \r",
+							"    responseData.data.forEach(function (item) {\r",
+							"        pm.expect(item).to.have.property('attribute_display');\r",
+							"        pm.expect(item).to.have.property('attribute_id');\r",
+							"        pm.expect(item).to.have.property('attribute_name');\r",
+							"        pm.expect(item).to.have.property('attribute_question');\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Message and status fields should be success\", function () {\r",
+							"  const responseData = pm.response.json();\r",
+							"\r",
+							"  pm.expect(responseData).to.be.an('object');\r",
+							"  pm.expect(responseData.message).to.satisfy((message) => message === \"Attributes retrieved successfully\" , \"Message should be succes\");\r",
+							"  pm.expect(responseData.status).to.satisfy((status) => status === \"success\" || status === null, \"Status should be succes\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{url}}/attributes_master"
+			},
+			"response": []
+		},
+		{
+			"name": "Master Postions",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"    pm.expect(pm.response.code).to.equal(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response content type is application/json\", function () {\r",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Data array is present in the response\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData.data).to.exist.and.to.be.an('array');\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Each object in the data array has the required fields\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData.data).to.be.an('array').that.is.not.empty;\r",
+							"    \r",
+							"    responseData.data.forEach(function (item) {\r",
+							"        pm.expect(item).to.have.property('id');\r",
+							"        pm.expect(item).to.have.property('name');\r",
+							"    \r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Message and status fields should be filled and success\", function () {\r",
+							"  const responseData = pm.response.json();\r",
+							"\r",
+							"  pm.expect(responseData).to.be.an('object');\r",
+							"  pm.expect(responseData.message).to.satisfy((message) => message === \"Positions retrieved successfully\", \"Message should be Positions retrieved successfully\");\r",
+							"  pm.expect(responseData.status).to.satisfy((status) => status === \"success\" , \"Status should be success\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{url}}/positions"
+			},
+			"response": []
+		},
+		{
+			"name": "Player",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"    pm.expect(pm.response.code).to.equal(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response has the correct Content-Type header\", function () {\r",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Data object contains article, attribute, and player fields\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData.data).to.be.an('object');\r",
+							"    pm.expect(responseData.data).to.have.property('article');\r",
+							"    pm.expect(responseData.data).to.have.property('attribute');\r",
+							"    pm.expect(responseData.data).to.have.property('player');\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Message should not an empty string\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData.message).to.not.equal(\"\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Status should not an empty string\", function () {\r",
+							"  const responseData = pm.response.json();\r",
+							"  \r",
+							"  pm.expect(responseData.status).to.not.equal(\"\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{url}}/player"
+			},
+			"response": []
+		},
+		{
+			"name": "Player Attribute",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Content-Type header is application/json\", function () {\r",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"pm.test(\"Message should not an empty string\", function () {\r",
+							"    const responseData = pm.response.json().data;\r",
+							"    \r",
+							"    pm.expect(responseData.message).to.not.equal(\"\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Status should not an empty string\", function () {\r",
+							"  const responseData = pm.response.json().data;\r",
+							"  \r",
+							"  pm.expect(responseData.status).to.not.equal(\"\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"All numeric properties in 'data' object are non-negative integers\", function () {\r",
+							"    const responseData = pm.response.json().data;\r",
+							"\r",
+							"    Object.keys(responseData).forEach(key => {\r",
+							"        if (Number.isInteger(responseData[key])) {\r",
+							"            pm.expect(responseData[key]).to.be.at.least(0, \"Value should be non-negative\");\r",
+							"        }\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Prefered foot is either 'left' or 'right'\", function () {\r",
+							"    const responseData = pm.response.json().data;\r",
+							"\r",
+							"    pm.expect(responseData).to.have.property('prefered_foot').that.is.oneOf(['left', 'right']);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Height and weight properties are non-negative numbers\", function () {\r",
+							"    const responseData = pm.response.json().data;\r",
+							"    \r",
+							"    pm.expect(responseData.height).to.be.a('number').and.to.be.at.least(0);\r",
+							"    pm.expect(responseData.weight).to.be.a('number').and.to.be.at.least(0);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{url}}/attributes/1"
+			},
+			"response": []
+		},
+		{
+			"name": "Article by Attributes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"pm.test(\"Response status code is 200\", function () {",
+							"  pm.expect(pm.response.code).to.equal(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Content type is application/json\", function () {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Article_id is a non-negative integer\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    responseData.data.forEach(function(article) {",
+							"        pm.expect(article.article_id).to.be.a('number').and.to.be.at.least(0, \"Article_id should be a non-negative integer\");",
+							"    });",
+							"});",
+							"",
+							"",
+							"pm.test(\"Message should not an empty string\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.message).to.not.equal(\"\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Status should not an empty string\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData.status).to.not.equal(\"\");",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{url}}/articles/attributes/1"
+			},
+			"response": []
+		},
+		{
+			"name": "Complete Article on Player",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Content-Type header is application/json\", function () {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Data field is present in the response\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData).to.have.property('data');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Message should not an empty string\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.message).to.not.equal(\"\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Status should not an empty string\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData.status).to.not.equal(\"\");",
+							"});",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{url}}/articles/complete/1"
+			},
+			"response": []
+		},
+		{
+			"name": "User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Email is in a valid format\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData.data.email).to.be.a('string').and.to.match(/^.+@.+\\..+$/, \"Email should be in a valid format\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Phone is in a valid format\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    ",
+							"});",
+							"pm.test(\"Message should not an empty string\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.message).to.not.equal(\"\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Status should not an empty string\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData.status).to.not.equal(\"\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Role  non-negative integers\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.data.role).to.be.a('number').and.to.satisfy(val => val >= 0, \"Role should be a non-negative integer\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{url}}/user"
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "apikey",
+		"apikey": {
+			"key": "Authorization",
+			"value": "{{token}}",
+			"in": "header"
+		}
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "http://127.0.0.1:5000",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "username",
+			"value": "player",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "password",
+			"value": "12345",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "name",
+			"value": "player satu",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "email",
+			"value": "player@gmail.com",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "phone",
+			"value": "085664760899",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "birth_date",
+			"value": "12/06/2002",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxOCwiZXhwIjoxNzA3NjYxMjQwfQ.wLdu5GBI6PHPOWpugLuDNWTSCBFRB84dO7LkTRZOFaA",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "title",
+			"value": "Training For Wing",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "body",
+			"value": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque condimentum pellentesque mattis. Sed vitae efficitur justo, eu malesuada odio. Sed id maximus justo. Curabitur et erat egestas, dapibus risus sed, pellentesque odio. In blandit, velit eget hendrerit fermentum, mi massa egestas sapien, id hendrerit nulla est quis eros. Morbi hendrerit eros est, eget ultrices ligula suscipit at. Vestibulum pretium ornare nunc ac posuere. Donec vel massa consequat, malesuada dolor at, tempus diam. Maecenas in diam sed tellus finibus pharetra vitae id massa. Curabitur a dictum nulla, ac commodo orci. Maecenas pretium non ante non egestas. Donec justo turpis, maximus non elit et, egestas pharetra justo.",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "steps",
+			"value": "Run 500m; Dribble Moves",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "position_1",
+			"value": "1",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "position_2",
+			"value": "2",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "position_3",
+			"value": "3",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "articleId",
+			"value": "",
+			"type": "string",
+			"disabled": true
+		}
+	]
+}
